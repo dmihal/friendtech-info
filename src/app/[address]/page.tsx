@@ -55,10 +55,16 @@ async function getData(address: string) {
 }
 
 export default async function Page({ params }: { params: { address: string } }) {
-  const data = await getData(params.address);
+  const data = await getData(params.address)
 
   return <div>
     <h1>{data.twitterName || data.address}</h1>
+    <img width={32} height={32} src={data.twitterPfpUrl} />
+    <a href={`https://twitter.com/${data.twitterUsername}`}>Twitter</a>
+    <div>Supply: {data.shareSupply}</div>
+    <div>Holding: {data.holdingCount}</div>
+    <div>Shareholders: {data.holderCount}</div>
+
     <pre>{JSON.stringify(data, null, 2)}</pre>
   </div>
 }

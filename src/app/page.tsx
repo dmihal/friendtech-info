@@ -18,6 +18,10 @@ async function getTopUsers() {
   })
 
   const data = await res.json()
+  if (data.errors) {
+    throw new Error(data.errors[0].message)
+  }
+
   const dataWithAccounts = await Promise.all(data.data.accounts.map(async (account) => {
     const socialDataRes = await fetch(`https://prod-api.kosetto.com/users/${account.id}`)
     const socialData = await socialDataRes.json()
@@ -39,6 +43,7 @@ export default async function Home() {
         <ul>
           {data.map((user) => (
             <li key={user.id}>
+              <img width={32} height={32} src={user.twitterPfpUrl} />
               <Link href={`/${user.id}`}>{user.twitterName}</Link>
               <pre>{JSON.stringify(user, null, 2)}</pre>
             </li>
