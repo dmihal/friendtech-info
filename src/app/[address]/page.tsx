@@ -39,13 +39,13 @@ async function getData(address: string) {
   return {
     ...data.data.account,
     ...await getSocialData(address),
-    positions: await Promise.all(data.data.account.positions.map(async (position) => {
+    positions: await Promise.all(data.data.account.positions.map(async (position: any) => {
       return {
         ...position,
         ...await getSocialData(position.subject.id),
       }
     })),
-    shareholders: await Promise.all(data.data.account.shareholders.map(async (shareholder) => {
+    shareholders: await Promise.all(data.data.account.shareholders.map(async (shareholder: any) => {
       return {
         ...shareholder,
         ...await getSocialData(shareholder.owner.id),

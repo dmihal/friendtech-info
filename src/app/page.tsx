@@ -22,7 +22,7 @@ async function getTopUsers() {
     throw new Error(data.errors[0].message)
   }
 
-  const dataWithAccounts = await Promise.all(data.data.accounts.map(async (account) => {
+  const dataWithAccounts = await Promise.all(data.data.accounts.map(async (account: any) => {
     const socialDataRes = await fetch(`https://prod-api.kosetto.com/users/${account.id}`)
     const socialData = await socialDataRes.json()
     return {
