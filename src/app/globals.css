@@ -4,24 +4,10 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 300, 300, 300;
-  --background-end-rgb: 300, 300, 300;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --foreground-rgb: 300, 300, 300;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+  --background-rgb: 255, 255, 255; /* White background */
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: rgb(var(--background-rgb)); /* Set the background color */
 }
