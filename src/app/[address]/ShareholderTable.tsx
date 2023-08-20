@@ -8,7 +8,7 @@ export default function ShareholderTable({ shareholders }: { shareholders: FullP
   const sortedShareholders = shareholders.sort((a, b) => b.shares - a.shares)
 
   return (
-    <div className="bg-white py-10">
+    <div className="bg-gray-50 py-10">
       <h2 className="px-4 text-base font-semibold leading-7 text-gray-900 sm:px-6 lg:px-8">Holders</h2>
       <table className="mt-6 w-full whitespace-nowrap text-left">
         <colgroup>
@@ -40,7 +40,7 @@ export default function ShareholderTable({ shareholders }: { shareholders: FullP
         </thead>
         <tbody className="divide-y divide-gray-200">
           {sortedShareholders.map((position) => (
-            <tr key={position.owner.id} className="hover:bg-gray-50">
+            <tr key={position.owner.id} className="hover:bg-gray-100">
               <td className="py-4 pl-0 pr-4 sm:table-cell sm:pr-8">
 								<div className="font-mono text-sm leading-6 text-gray-900 text-center">{i++}</div>
 							</td>
@@ -61,7 +61,9 @@ export default function ShareholderTable({ shareholders }: { shareholders: FullP
                 </div>
 							</td>
               <td className="hidden py-4 pl-0 pr-8 text-sm leading-6 text-gray-500 md:table-cell lg:pr-20">
-                {position.shares + ' shares'}
+                <div className="font-mono text-sm leading-6 text-gray-900">
+                  {position.shares + ' owned'}
+                </div>
               </td>
             </tr>
           ))}

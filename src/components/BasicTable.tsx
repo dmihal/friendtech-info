@@ -7,7 +7,7 @@ export default function BasicTable({ people }: { people: SimpleAccountData[] }) 
   let i = 1;
 
   return (
-    <div className="bg-white py-10">
+    <div className="bg-gray-50 py-10">
       <h2 className="px-4 text-base font-semibold leading-7 text-gray-900 sm:px-6 lg:px-8">Top Friend.tech users</h2>
       <table className="mt-6 w-full whitespace-nowrap text-left">
         <colgroup>
@@ -47,7 +47,7 @@ export default function BasicTable({ people }: { people: SimpleAccountData[] }) 
         </thead>
         <tbody className="divide-y divide-gray-200">
           {people.map((person) => (
-            <tr key={person.holderCount} className="hover:bg-gray-50">
+            <tr key={person.holderCount} className="hover:bg-gray-100">
               <td className="py-4 pl-0 pr-4 sm:table-cell sm:pr-8">
 								<div className="font-mono text-sm leading-6 text-gray-900 text-center">{i++}</div>
 							</td>
