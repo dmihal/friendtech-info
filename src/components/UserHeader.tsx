@@ -1,4 +1,6 @@
-export default function UserHeader({user}) {
+import { AccountData } from "@/api";
+
+export default function UserHeader({ user }: { user: AccountData }) {
     return (
       <div className="w-full overflow-hidden rounded-lg bg-white shadow">
         <h2 className="sr-only" id="profile-overview-title">
