@@ -1,11 +1,15 @@
-import { getAccountData, getTimeData } from '@/api'
+import { getAccountData, getTimeData, getTopUsers } from '@/api'
 import UserHeader from '../../components/UserHeader'
 import ChartWrapper from './ChartWrapper'
+
+export async function generateStaticParams() {
+  const accounts = await getTopUsers()
+  return accounts.map(account => ({ params: { address: account.id } }))
+}
 
 export default async function AddressPage({ params }: { params: { address: string } }) {
   const data = await getAccountData(params.address)
   const timeData = await getTimeData(params.address)
-
 
   if (!data) {
     return (
