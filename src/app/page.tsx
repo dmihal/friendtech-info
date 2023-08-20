@@ -2,6 +2,16 @@ import { getTopUsers } from '@/api'
 import BasicTable from '../components/BasicTable'
 import Banner from '../components/Banner'
 
+export const metadata = {
+  title: 'FriendTech.info',
+  openGraph: {
+    title: 'FriendTech.info',
+    siteName: 'FriendTech.info',
+    locale: 'en_US',
+    type: 'website',
+  },
+}
+
 export default async function Home() {
   const data = await getTopUsers()
 
