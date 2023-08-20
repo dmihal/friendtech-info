@@ -8,7 +8,7 @@ export default function Banner() {
           <svg viewBox="0 0 2 2" className="mx-2 inline h-0.5 w-0.5 fill-current" aria-hidden="true">
             <circle cx={1} cy={1} r={1} />
           </svg>
-          Find us on friend.tech and get our token &nbsp;<span aria-hidden="true">&rarr;</span> @friendtechinfo
+          Find us on friend.tech &nbsp;<span aria-hidden="true">&rarr;</span> @friendtechinfo
       </p>
       <div className="flex flex-1 justify-end">
       </div>
