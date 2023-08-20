@@ -2,12 +2,6 @@ import { SimpleAccountData } from '@/api';
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
 
-// ... (the rest of the code remains the same)
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
-}
-
 export default function BasicTable({ people }: { people: SimpleAccountData[] }) {
   let i = 1;
 
@@ -54,20 +48,26 @@ export default function BasicTable({ people }: { people: SimpleAccountData[] }) 
               <td className="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
                 <div className="flex items-center gap-x-4">
                   <img src={person.twitterPfpUrl} alt="" className="h-8 w-8 rounded-full bg-gray-100" />
-                  <Link href={`/${person.id}`}><div className="truncate text-sm font-medium leading-6 text-gray-900">{person.twitterName}</div></Link>
+                  <Link href={`/${person.id}`}>
+                    <div className="truncate text-sm font-medium leading-6 text-gray-900">{person.twitterName}</div>
+                  </Link>
                 </div>
               </td>
 							<td className="hidden py-4 pl-0 pr-4 md:table-cell md:pr-8">
 								<div className="font-mono text-sm leading-6 text-gray-900">{person.holderCount}</div>
 							</td>
               <td className="hidden py-4 pl-0 pr-4 text-sm leading-6 sm:table-cell sm:pr-8 lg:pr-20">
-								<div className="font-mono text-sm leading-6 text-gray-900">{(person.holderCount * (person.displayPrice / 1e18)).toFixed(3) + ' ETH'}</div>
+								<div className="font-mono text-sm leading-6 text-gray-900">
+                  {(parseFloat(person.holderCount) * (parseFloat(person.displayPrice) / 1e18)).toFixed(3) + ' ETH'}
+                </div>
 							</td>
               {/* <td className="hidden py-4 pl-0 pr-8 text-sm leading-6 text-gray-500 md:table-cell lg:pr-20">
                 {person.holderCount}
               </td> */}
               <td className="py-4 pl-0 pr-4 text-right text-sm leading-6 text-gray-500 sm:table-cell sm:pr-6 lg:pr-8">
-                <div className="font-mono text-sm leading-6 text-gray-900">{(person.displayPrice / 1e18).toFixed(3) + ' ETH'}</div>
+                <div className="font-mono text-sm leading-6 text-gray-900">
+                  {(parseFloat(person.displayPrice) / 1e18).toFixed(3) + ' ETH'}
+                </div>
               </td>
             </tr>
           ))}
