@@ -1,3 +1,5 @@
+import UserHeader from '../../components/UserHeader'
+
 async function getSocialData(address: string) {
   const socialDataRes = await fetch(`https://prod-api.kosetto.com/users/${address}`)
   const socialData = await socialDataRes.json()
@@ -56,15 +58,14 @@ async function getData(address: string) {
 
 export default async function Page({ params }: { params: { address: string } }) {
   const data = await getData(params.address)
-
   return <div>
-    <h1>{data.twitterName || data.address}</h1>
-    <img width={32} height={32} src={data.twitterPfpUrl} />
-    <a href={`https://twitter.com/${data.twitterUsername}`}>Twitter</a>
-    <div>Supply: {data.shareSupply}</div>
-    <div>Holding: {data.holdingCount}</div>
-    <div>Shareholders: {data.holderCount}</div>
-
-    <pre>{JSON.stringify(data, null, 2)}</pre>
+    <main className='flex min-h-screen flex-col items-center mx-auto w-90vw sm:w-70vw p-4'>
+      <div className='w-full'>
+        <UserHeader user={data}/>
+      </div>
+      <div className='w-full'>
+        
+      </div>
+    </main>
   </div>
 }

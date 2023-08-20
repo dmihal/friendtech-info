@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import BasicTable from '../components/BasicTable'
 
 async function getTopUsers() {
   const res = await fetch("https://api.thegraph.com/subgraphs/name/dmihal/friend-tech", {
@@ -8,7 +9,7 @@ async function getTopUsers() {
     },
     body: JSON.stringify({
       query: `{
-        accounts(first: 5, orderBy: shareSupply, orderDirection: desc) {
+        accounts(first: 10, orderBy: shareSupply, orderDirection: desc) {
           id
           shareSupply
         }
@@ -38,18 +39,11 @@ export default async function Home() {
   const data = await getTopUsers()
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="relative flex place-items-center">
-        <ul>
-          {data.map((user) => (
-            <li key={user.id}>
-              <img width={32} height={32} src={user.twitterPfpUrl} />
-              <Link href={`/${user.id}`}>{user.twitterName}</Link>
-              <pre>{JSON.stringify(user, null, 2)}</pre>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </main>
+    <main className="flex min-h-screen flex-col items-center p-8">
+    <div className="flex items-center justify-center w-2/3">
+      <BasicTable people={data} />
+    </div>
+  </main>
+  
   )
 }
