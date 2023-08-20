@@ -152,6 +152,8 @@ export async function getAccountData(address: string): Promise<FullAccountData |
     account(id: "${address.toLowerCase()}") {
       id
       shareSupply
+      lastTradePrice
+      joined
       positions(first: 500) {
         owner {
           id

@@ -40,7 +40,6 @@ export default async function AddressPage({ params }: Props) {
     )
   }
 
-
   return (
     <main className="p-10 max-w-5xl mx-auto">
       <Link href={'/'}>
