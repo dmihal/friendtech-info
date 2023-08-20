@@ -60,13 +60,13 @@ export default async function AddressPage({ params }: { params: { address: strin
                   <div className="bg-white px-4 py-5 sm:px-5 xl:px-4" style={{ flexBasis: '25%' }}>
                       <dt className="text-sm font-medium leading-6 text-gray-500">Price</dt>
                       <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-                          {(data.displayPrice/1e18).toFixed(3) + ' ETH'}
+                          {parseFloat(data.lastTradePrice).toFixed(3) + ' ETH'}
                       </dd>
                   </div>
                   <div className="bg-white px-4 py-5 sm:px-5 xl:px-4" style={{ flexBasis: '25%' }}>
                       <dt className="text-sm font-medium leading-6 text-gray-500">Market Cap</dt>
                       <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-                          {(data.holderCount * (data.displayPrice / 1e18)).toFixed(3) + ' ETH'}
+                          {(parseFloat(data.holderCount) * parseFloat(data.lastTradePrice)).toFixed(3) + ' ETH'}
                       </dd>
                   </div>
                   <div className="bg-white px-4 py-5 sm:px-5 xl:px-4" style={{ flexBasis: '25%' }}>
