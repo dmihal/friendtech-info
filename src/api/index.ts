@@ -11,14 +11,31 @@ export interface SocialData {
 
 export interface SimpleAccountChainData {
   id: string
+  lastTradePrice: string
+  joined: number
+  shareSupply: string
 }
 
 export interface ChainPosition {
   subject: SimpleAccountChainData
+  owner: SimpleAccountChainData
+  shares: number
 }
 
-export interface FullAccountChainData {
-  shareSupply: string
+export interface FullPosition {
+  subject: SimpleAccountData
+  owner: SimpleAccountData
+  shares: number
+}
+
+export interface FullAccountChainData extends SimpleAccountChainData {
+  positions: ChainPosition[]
+  shareholders: ChainPosition[]
+}
+
+export interface FullAccountData extends AccountData {
+  positions: FullPosition[]
+  shareholders: FullPosition[]
 }
 
 export type SimpleAccountData = SocialData & SimpleAccountChainData
@@ -34,6 +51,24 @@ export interface AccountTimeData {
 }
 
 const MINUTE = 60
+
+async function graphQuery<T = any>(query: string, revalidateTime = 5): Promise<T> {
+  const res = await fetch("https://api.thegraph.com/subgraphs/name/dmihal/friend-tech", {
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      query,
+    }),
+    method: "POST",
+    next: { revalidate: revalidateTime * MINUTE },
+  })
+  const data = await res.json()
+  if (data.errors) {
+    throw new Error(data.errors[0].message)
+  }
+  return data.data
+}
 
 export async function getSocialData(address: string): Promise<SocialData> {
   const socialDataRes = await fetch(`https://prod-api.kosetto.com/users/${address}`, {
@@ -52,29 +87,8 @@ export async function getAddressFromUsername(name: string): Promise<string | nul
   return data.users.length > 0 && data.users[0].twitterUsername == name ? data.users[0].address : null
 }
 
-export async function getTopUsers(): Promise<SimpleAccountData[]> {
-  const res = await fetch("https://api.thegraph.com/subgraphs/name/dmihal/friend-tech", {
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      query: `{
-        accounts(first: 100, orderBy: shareSupply, orderDirection: desc) {
-          id
-          shareSupply
-        }
-      }`
-    }),
-    method: "POST",
-    next: { revalidate: 5 * MINUTE },
-  })
-
-  const data = await res.json()
-  if (data.errors) {
-    throw new Error(data.errors[0].message)
-  }
-
-  const dataWithAccounts = await Promise.all(data.data.accounts.map(async (account: any) => {
+async function addSocialData(users: { id: string }[]): Promise<SimpleAccountData[]> {
+  const dataWithAccounts = await Promise.all(users.map(async (account: any) => {
     return {
       ...await getSocialData(account.id),
       ...account,
@@ -84,94 +98,120 @@ export async function getTopUsers(): Promise<SimpleAccountData[]> {
   return dataWithAccounts
 }
 
-export async function getAccountData(address: string): Promise<AccountData | null> {
-  const res = await fetch("https://api.thegraph.com/subgraphs/name/dmihal/friend-tech", {
-    "headers": {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      query: `{
-        account(id: "${address.toLowerCase()}") {
+async function addPositionsSocialData(positions: ChainPosition[]): Promise<FullPosition[]> {
+  const dataWithAccounts = await Promise.all(positions.map(async (position) => {
+    return {
+      ...position,
+      subject: {
+        ...await getSocialData(position.subject.id),
+        ...position.subject,
+      },
+      owner: {
+        ...await getSocialData(position.owner.id),
+        ...position.owner,
+      },
+      shares: parseInt(position.shares as any),
+    }
+  }))
+
+  return dataWithAccounts
+}
+
+export async function getTopUsers(): Promise<SimpleAccountData[]> {
+  const data = await graphQuery(`{
+    accounts(first: 100, orderBy: shareSupply, orderDirection: desc) {
+      id
+      shareSupply
+      lastTradePrice
+      joined
+    }
+  }`)
+
+  const dataWithAccounts = await addSocialData(data.accounts)
+
+  return dataWithAccounts
+}
+
+export async function getRecentUsers(): Promise<SimpleAccountData[]> {
+  const data = await graphQuery(`{
+    accounts(first: 100, orderBy: joined, orderDirection: desc) {
+      id
+      shareSupply
+      lastTradePrice
+      joined
+    }
+  }`, 15)
+
+  const dataWithAccounts = await addSocialData(data.accounts)
+
+  return dataWithAccounts
+}
+
+export async function getAccountData(address: string): Promise<FullAccountData | null> {
+  const data = await graphQuery(`{
+    account(id: "${address.toLowerCase()}") {
+      id
+      shareSupply
+      positions(first: 500) {
+        owner {
           id
-          shareSupply
-          positions {
-            subject {
-              id
-            }
-          }
-          shareholders {
-            owner {
-              id
-            }
-          }
+          lastTradePrice
         }
-      }`
-    }),
-    "method": "POST",
-    next: { revalidate: 5 * MINUTE },
-  })
+        subject {
+          id
+          lastTradePrice
+        }
+        shares
+      }
+      shareholders(first: 500) {
+        owner {
+          id
+          lastTradePrice
+        }
+        subject {
+          id
+          lastTradePrice
+        }
+        shares
+      }
+    }
+  }`)
 
-  const data = await res.json()
-
-  if (!data.data.account) {
+  if (!data.account) {
     return null
   }
 
   return {
-    ...data.data.account,
+    ...data.account,
     ...await getSocialData(address),
-    positions: await Promise.all(data.data.account.positions.map(async (position: any) => {
-      return {
-        ...position,
-        ...await getSocialData(position.subject.id),
-      }
-    })),
-    shareholders: await Promise.all(data.data.account.shareholders.map(async (shareholder: any) => {
-      return {
-        ...shareholder,
-        ...await getSocialData(shareholder.owner.id),
-      }
-    })),
+    positions: await addPositionsSocialData(data.account.positions),
+    shareholders: await addPositionsSocialData(data.account.shareholders),
   }
 }
 
 export async function getTimeData(id: string): Promise<{ hourData: AccountTimeData[], dayData: AccountTimeData[] }> {
-  const res = await fetch("https://api.thegraph.com/subgraphs/name/dmihal/friend-tech", {
-    "headers": {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      query: `{
-        account(id: "${id.toLowerCase()}") {
-          hourData {
-            timestamp
-            minPrice
-            maxPrice
-            startPrice
-            endPrice
-            volume
-          }
-          dayData {
-            timestamp
-            minPrice
-            maxPrice
-            startPrice
-            endPrice
-            volume
-          }
-        }
-      }`
-    }),
-    "method": "POST",
-    next: { revalidate: 5 * MINUTE },
-  })
-  const data = await res.json()
+  const data = await graphQuery(`{
+    account(id: "${id.toLowerCase()}") {
+      hourData {
+        timestamp
+        minPrice
+        maxPrice
+        startPrice
+        endPrice
+        volume
+      }
+      dayData {
+        timestamp
+        minPrice
+        maxPrice
+        startPrice
+        endPrice
+        volume
+      }
+    }
+  }`)
 
-  if (data.errors) {
-    throw new Error(data.errors[0].message)
-  }
-
-  const hourData = data.data.account.hourData.map((hour: any) => ({
+  const hourData = data.account.hourData.map((hour: any) => ({
     time: parseInt(hour.timestamp),
     open: parseFloat(hour.startPrice),
     high: parseFloat(hour.maxPrice),
@@ -179,7 +219,7 @@ export async function getTimeData(id: string): Promise<{ hourData: AccountTimeDa
     close: parseFloat(hour.endPrice),
     volume: parseFloat(hour.volume),
   }))
-  const dayData = data.data.account.dayData.map((day: any) => ({
+  const dayData = data.account.dayData.map((day: any) => ({
     time: parseInt(day.timestamp),
     open: parseFloat(day.startPrice),
     high: parseFloat(day.maxPrice),

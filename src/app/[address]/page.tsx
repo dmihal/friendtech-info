@@ -1,26 +1,18 @@
-import { getAccountData, getTimeData } from '@/api'
+import { getAccountData, getTimeData, getTopUsers } from '@/api'
 import UserHeader from '../../components/UserHeader'
 import ChartWrapper from '../../components/ChartWrapper'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-
-
 import Link from 'next/link';
+import ShareholderTable from './ShareholderTable'
+
+export async function generateStaticParams() {
+  const accounts = await getTopUsers()
+  return accounts.map(account => ({ params: { address: account.id } }))
+}
 
 export default async function AddressPage({ params }: { params: { address: string } }) {
   const data = await getAccountData(params.address)
   const timeData = await getTimeData(params.address)
-
-  const stats = [
-    { name: 'Revenue', value: '$405,091.00', change: '+4.75%', changeType: 'positive' },
-    { name: 'Overdue invoices', value: '$12,787.00', change: '+54.02%', changeType: 'negative' },
-    { name: 'Outstanding invoices', value: '$245,988.00', change: '-1.39%', changeType: 'positive' },
-    { name: 'Expenses', value: '$30,156.00', change: '+10.18%', changeType: 'negative' },
-  ]
-
-  function classNames(...classes) {
-    return classes.filter(Boolean).join(' ')
-  }
-
 
   if (!data) {
     return (
@@ -92,7 +84,8 @@ export default async function AddressPage({ params }: { params: { address: strin
                 </div>
               </div>
           </section>
-          </div>
+          <ShareholderTable shareholders={data.shareholders} />
+        </div>
       </div>
     </main>
   )
