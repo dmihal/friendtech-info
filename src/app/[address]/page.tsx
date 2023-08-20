@@ -4,13 +4,29 @@ import ChartWrapper from '../../components/ChartWrapper'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import ShareholderTable from './ShareholderTable'
+import { Metadata } from 'next';
 
 export async function generateStaticParams() {
   const accounts = await getTopUsers()
   return accounts.map(account => ({ params: { address: account.id } }))
 }
 
-export default async function AddressPage({ params }: { params: { address: string } }) {
+interface Props {
+  params: { address: string }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const data = await getAccountData(params.address)
+  if (!data) {
+    return {}
+  }
+
+  return {
+    title: `${data.twitterName || data.id} - FriendTech.info`,
+  }
+}
+
+export default async function AddressPage({ params }: Props) {
   const data = await getAccountData(params.address)
   const timeData = await getTimeData(params.address)
 
