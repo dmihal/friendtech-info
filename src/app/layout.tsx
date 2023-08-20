@@ -1,7 +1,8 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { GoogleAnalytics } from "nextjs-google-analytics";
+import { GoogleAnalytics } from './GoogleAnalytics'
+import { useRouter } from 'next/router'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <GoogleAnalytics trackPageViews />
+      <GoogleAnalytics GA_TRACKING_ID={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID!} />
       <body className={inter.className}>{children}</body>
     </html>
   )
