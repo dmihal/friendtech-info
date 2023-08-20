@@ -1,6 +1,7 @@
 import { getTopUsers } from '@/api'
 import BasicTable from '../components/BasicTable'
 import Banner from '../components/Banner'
+import SearchHeader from '../components/SearchHeader'
 
 export const metadata = {
   title: 'FriendTech.info',
@@ -19,8 +20,9 @@ export default async function Home() {
     <>
       <Banner />
       <main className="flex min-h-screen flex-col items-center p-8">
-        <h1 className="text-4xl font-bold left-aligned mt-8 mb-4">FriendTech.info</h1>
-        <div className="flex items-center justify-center w-2/3">
+        <h1 className="text-4xl font-bold left-aligned mt-8 mb-10">FriendTech.info</h1>
+        <div className="flex flex-col items-center justify-center mt-10">
+          <SearchHeader/>
           <BasicTable people={data} />
         </div>
       </main>

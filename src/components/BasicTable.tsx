@@ -7,7 +7,6 @@ export default function BasicTable({ people }: { people: SimpleAccountData[] }) 
 
   return (
     <div className="bg-gray-50 py-10">
-      <h2 className="px-4 text-base font-semibold leading-7 text-gray-900 sm:px-6 lg:px-8">Top Friend.tech users</h2>
       <table className="mt-6 w-full whitespace-nowrap text-left">
         <colgroup>
           <col className="w-full sm:w-4/12" />
