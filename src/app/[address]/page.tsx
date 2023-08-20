@@ -84,9 +84,9 @@ export default async function AddressPage({ params }: { params: { address: strin
                 </div>
               </div>
           </section>
-          <ShareholderTable shareholders={data.shareholders} />
         </div>
       </div>
+      <ShareholderTable shareholders={data.shareholders} />
     </main>
   )
 }
