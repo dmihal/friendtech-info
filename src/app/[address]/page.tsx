@@ -1,6 +1,7 @@
 import { getAccountData, getTimeData, getTopUsers } from '@/api'
 import UserHeader from '../../components/UserHeader'
 import ChartWrapper from './ChartWrapper'
+import ShareholderTable from './ShareholderTable'
 
 export async function generateStaticParams() {
   const accounts = await getTopUsers()
@@ -30,6 +31,7 @@ export default async function AddressPage({ params }: { params: { address: strin
         <div className='w-full'>
           <ChartWrapper data={timeData}/>
         </div>
+        <ShareholderTable shareholders={data.shareholders} />
       </main>
     </div>
   )

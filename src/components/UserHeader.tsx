@@ -28,13 +28,13 @@ export default function UserHeader({ user }: { user: AccountData }) {
           </div>
         </div>
         <div className="grid grid-cols-1 divide-y divide-gray-200 border-t border-gray-200 bg-gray-50 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-            <div key={user.holderCount} className="px-6 py-5 text-center text-sm font-medium">
+            <div className="px-6 py-5 text-center text-sm font-medium">
                 <span className="text-gray-900">{user.shareSupply}</span> <span className="text-gray-600">{"Supply"}</span>
             </div>
-            <div key={user.holderCount} className="px-6 py-5 text-center text-sm font-medium">
+            <div className="px-6 py-5 text-center text-sm font-medium">
                 <span className="text-gray-900">{user.holdingCount}</span> <span className="text-gray-600">{"Holders"}</span>
             </div>
-            <div key={user.holderCount} className="px-6 py-5 text-center text-sm font-medium">
+            <div className="px-6 py-5 text-center text-sm font-medium">
                 <span className="text-gray-900">{user.holderCount}</span> <span className="text-gray-600">{"Shareholders"}</span>
             </div>
         </div>

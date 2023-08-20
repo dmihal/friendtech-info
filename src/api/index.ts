@@ -13,14 +13,29 @@ export interface SimpleAccountChainData {
   id: string
   lastTradePrice: string
   joined: number
+  shareSupply: string
 }
 
 export interface ChainPosition {
   subject: SimpleAccountChainData
+  owner: SimpleAccountChainData
+  shares: number
 }
 
-export interface FullAccountChainData {
-  shareSupply: string
+export interface FullPosition {
+  subject: SimpleAccountData
+  owner: SimpleAccountData
+  shares: number
+}
+
+export interface FullAccountChainData extends SimpleAccountChainData {
+  positions: ChainPosition[]
+  shareholders: ChainPosition[]
+}
+
+export interface FullAccountData extends AccountData {
+  positions: FullPosition[]
+  shareholders: FullPosition[]
 }
 
 export type SimpleAccountData = SocialData & SimpleAccountChainData
@@ -83,6 +98,25 @@ async function addSocialData(users: { id: string }[]): Promise<SimpleAccountData
   return dataWithAccounts
 }
 
+async function addPositionsSocialData(positions: ChainPosition[]): Promise<FullPosition[]> {
+  const dataWithAccounts = await Promise.all(positions.map(async (position) => {
+    return {
+      ...position,
+      subject: {
+        ...await getSocialData(position.subject.id),
+        ...position.subject,
+      },
+      owner: {
+        ...await getSocialData(position.owner.id),
+        ...position.owner,
+      },
+      shares: parseInt(position.shares as any),
+    }
+  }))
+
+  return dataWithAccounts
+}
+
 export async function getTopUsers(): Promise<SimpleAccountData[]> {
   const data = await graphQuery(`{
     accounts(first: 100, orderBy: shareSupply, orderDirection: desc) {
@@ -113,20 +147,32 @@ export async function getRecentUsers(): Promise<SimpleAccountData[]> {
   return dataWithAccounts
 }
 
-export async function getAccountData(address: string): Promise<AccountData | null> {
+export async function getAccountData(address: string): Promise<FullAccountData | null> {
   const data = await graphQuery(`{
     account(id: "${address.toLowerCase()}") {
       id
       shareSupply
-      positions {
-        subject {
-          id
-        }
-      }
-      shareholders {
+      positions(first: 500) {
         owner {
           id
+          lastTradePrice
         }
+        subject {
+          id
+          lastTradePrice
+        }
+        shares
+      }
+      shareholders(first: 500) {
+        owner {
+          id
+          lastTradePrice
+        }
+        subject {
+          id
+          lastTradePrice
+        }
+        shares
       }
     }
   }`)
@@ -138,18 +184,8 @@ export async function getAccountData(address: string): Promise<AccountData | nul
   return {
     ...data.account,
     ...await getSocialData(address),
-    positions: await Promise.all(data.account.positions.map(async (position: any) => {
-      return {
-        ...position,
-        ...await getSocialData(position.subject.id),
-      }
-    })),
-    shareholders: await Promise.all(data.account.shareholders.map(async (shareholder: any) => {
-      return {
-        ...shareholder,
-        ...await getSocialData(shareholder.owner.id),
-      }
-    })),
+    positions: await addPositionsSocialData(data.account.positions),
+    shareholders: await addPositionsSocialData(data.account.shareholders),
   }
 }
 
