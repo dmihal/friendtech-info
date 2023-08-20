@@ -28,9 +28,9 @@ export default function BasicTable({ people }: { people: SimpleAccountData[] }) 
             <th scope="col" className="hidden py-2 pl-0 pr-8 font-semibold md:table-cell">
 							<a href="#" className="group inline-flex">
 								Holders
-								<span className="ml-2 flex-none rounded bg-gray-100 text-gray-900 group-hover:bg-gray-200">
+								{/* <span className="ml-2 flex-none rounded bg-gray-100 text-gray-900 group-hover:bg-gray-200">
 									<ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
-								</span>
+								</span> */}
 							</a>
 						</th>
 						<th scope="col" className="hidden py-2 pl-0 pr-4 text-right font-semibold sm:table-cell sm:pr-8 sm:text-left lg:pr-20">
