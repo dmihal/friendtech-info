@@ -8,8 +8,13 @@ export const metadata = {
     locale: 'en_US',
     type: 'website',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Recent Users - FriendTech.info',
+    description: 'Friend.tech metrics',
+    creator: '@friendtechinfo',
+  },
 }
-
 
 export default async function Home() {
   const data = await getRecentUsers()
