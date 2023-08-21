@@ -1,30 +1,48 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { Combobox, Dialog, Transition } from '@headlessui/react'
+import { useRouter } from 'next/navigation'
+// import Image from 'next/image'
 
 const people = [
   { id: 1, name: 'Leslie Alexander', url: '#' },
   // More people...
 ]
 
-function classNames(...classes) {
+function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function SearchWizard() {
-  const [query, setQuery] = useState('')
-  const [open, setOpen] = useState(true)
+interface User {
+  address: string
+  twitterUsername: string
+  twitterName: string
+  twitterPfpUrl: string
+}
 
-  const filteredPeople =
-    query === ''
-      ? []
-      : people.filter((person) => {
-          return person.name.toLowerCase().includes(query.toLowerCase())
-        })
+async function getSearch(query: string): Promise<{ users: User[] }> {
+  const req = await fetch(`/api/search/${query}`)
+  const result = await req.json()
+  return result
+}
+
+export default function SearchWizard({ isOpen, onClose }: { isOpen: boolean, onClose: () => void}) {
+  const [query, setQuery] = useState('')
+  const [people, setPeople] = useState<any[]>([])
+  const router = useRouter()
+  const queryRef = useRef('')
+
+  useEffect(() => {
+    getSearch(query).then((result) => {
+      if (query === queryRef.current) {
+        setPeople(result.users)
+      }
+    })
+  }, [query])
 
   return (
-    <Transition.Root show={open} as={Fragment} afterLeave={() => setQuery('')} appear>
-      <Dialog as="div" className="relative z-10" onClose={setOpen}>
+    <Transition.Root show={isOpen} as={Fragment} afterLeave={() => setQuery('')} appear>
+      <Dialog as="div" className="relative z-10" onClose={onClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -48,7 +66,7 @@ export default function SearchWizard() {
             leaveTo="opacity-0 scale-95"
           >
             <Dialog.Panel className="mx-auto max-w-xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
-              <Combobox onChange={(person) => (window.location = person.url)}>
+              <Combobox onChange={(person: User) => router.push(`/${person.address}`)}>
                 <div className="relative">
                   <MagnifyingGlassIcon
                     className="pointer-events-none absolute left-4 top-3.5 h-5 w-5 text-gray-400"
@@ -57,28 +75,33 @@ export default function SearchWizard() {
                   <Combobox.Input
                     className="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
                     placeholder="Search..."
-                    onChange={(event) => setQuery(event.target.value)}
+                    onChange={(event) => {
+                      queryRef.current = event.target.value
+                      setQuery(event.target.value)
+                    }
+                    }
                   />
                 </div>
 
-                {filteredPeople.length > 0 && (
+                {people.length > 0 && (
                   <Combobox.Options static className="max-h-72 scroll-py-2 overflow-y-auto py-2 text-sm text-gray-800">
-                    {filteredPeople.map((person) => (
+                    {people.map((person) => (
                       <Combobox.Option
-                        key={person.id}
+                        key={person.address}
                         value={person}
                         className={({ active }) =>
-                          classNames('cursor-default select-none px-4 py-2', active && 'bg-indigo-600 text-white')
+                          classNames('cursor-pointer select-none px-4 py-2 flex items-center gap-x-2', active ? 'bg-indigo-600 text-white' : '')
                         }
                       >
-                        {person.name}
+                        <img src={person.twitterPfpUrl} className="h-8 w-8 rounded-full bg-gray-100" />
+                        {person.twitterName}
                       </Combobox.Option>
                     ))}
                   </Combobox.Options>
                 )}
 
-                {query !== '' && filteredPeople.length === 0 && (
-                  <p className="p-4 text-sm text-gray-500">No people found.</p>
+                {query !== '' && people.length === 0 && (
+                  <p className="p-4 text-sm text-gray-500">No users found.</p>
                 )}
               </Combobox>
             </Dialog.Panel>

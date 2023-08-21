@@ -1,10 +1,13 @@
+'use client'
 import { SimpleAccountData } from '@/api';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useContext } from 'react';
+import { AppRouterContext } from 'next/dist/shared/lib/app-router-context';
 
 export default function BasicTable({ people }: { people: SimpleAccountData[] }) {
-  const router = useRouter()
+  const router = useContext(AppRouterContext)!
   let i = 1;
 
   return (
@@ -47,7 +50,7 @@ export default function BasicTable({ people }: { people: SimpleAccountData[] }) 
         </thead>
         <tbody className="divide-y divide-gray-200">
           {people.map((person) => (
-            <tr key={person.holderCount} onClick={() => router.push(`/${person.id}`)} className="cursor-pointer hover:bg-gray-100">
+            <tr key={person.id} onClick={() => router.push(`/${person.id}`)} className="cursor-pointer hover:bg-gray-100">
               <td className="py-4 pl-0 pr-4 sm:table-cell sm:pr-8">
 								<div className="font-mono text-sm leading-6 text-gray-900 text-center">{i++}</div>
 							</td>
