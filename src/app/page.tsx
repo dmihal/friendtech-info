@@ -1,5 +1,5 @@
 import { getTopUsers } from '@/api'
-import BasicTable from '../components/BasicTable'
+import UserTable from '../components/UserTable'
 import Banner from '../components/Banner'
 import SearchHeader from '../components/SearchHeader'
 
@@ -19,11 +19,11 @@ export default async function Home() {
   return (
     <>
       <Banner />
-      <main className="flex min-h-screen flex-col items-center p-8">
-        <h1 className="text-4xl font-bold left-aligned mt-8 mb-10">FriendTech.info</h1>
-        <div className="flex flex-col items-center justify-center mt-10">
+      <main className="flex flex-col min-h-screen items-center px-4 md:px-8">
+        <h1 className="text-2xl md:text-4xl font-bold text-left mt-4 md:mt-8 mb-5 md:mb-10">FriendTech.info</h1>
+        <div className="flex flex-col items-center justify-center mt-5 md:mt-10">
           <SearchHeader/>
-          <BasicTable people={data} />
+          <UserTable people={data} />
         </div>
       </main>
     </>
