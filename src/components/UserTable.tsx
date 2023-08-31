@@ -5,11 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useContext } from 'react';
 import { AppRouterContext } from 'next/dist/shared/lib/app-router-context';
-import { getAccountName } from '@/utils';
-
-function classNames(...classes: (false | null | undefined | string)[]) {
-  return classes.filter(Boolean).join(' ')
-}
+import { classNames, getAccountName } from '@/utils';
 
 interface UserTableProps {
   people: SimpleAccountData[]

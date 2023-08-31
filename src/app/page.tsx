@@ -3,6 +3,7 @@ import UserTable from '../components/UserTable'
 import Banner from '../components/Banner'
 import SearchHeader from '../components/SearchHeader'
 import Link from 'next/link'
+import StatBar from './StatBar'
 
 export const metadata = {
   title: 'FriendTech.info',
@@ -24,6 +25,7 @@ export default async function Home() {
         <h1 className="text-2xl md:text-4xl font-bold text-left mt-4 md:mt-8 mb-5 md:mb-10">FriendTech.info</h1>
         <div className="flex flex-col items-center justify-center mt-5 md:mt-10">
           <SearchHeader/>
+          <StatBar />
           <div>
             <strong>Top Accounts</strong> | <Link href="/traders">Top Traders</Link> | <Link href="/recent">Recently Joined</Link>
           </div>

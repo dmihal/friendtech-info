@@ -3,10 +3,7 @@ import { FullPosition } from '@/api';
 import { useContext } from 'react';
 import Link from 'next/link';
 import { AppRouterContext } from 'next/dist/shared/lib/app-router-context';
-
-function classNames(...classes: (false | null | undefined | string)[]) {
-  return classes.filter(Boolean).join(' ')
-}
+import { classNames } from '@/utils';
 
 export default function ShareholderTable({ shareholders }: { shareholders: FullPosition[] }) {
   let i = 1;

@@ -1,4 +1,5 @@
 import { UTCTimestamp } from "lightweight-charts"
+import { graphQuery } from "./data-providers"
 
 export interface SocialData {
   twitterPfpUrl: string
@@ -64,26 +65,6 @@ export interface AccountTimeData {
 }
 
 const MINUTE = 60
-
-async function graphQuery<T = any>(query: string, revalidateTime = 5): Promise<T> {
-  const subgraph = process.env.SUBGRAPH || 'dmihal/friend-tech'
-  const subgraphSubURL = subgraph.indexOf('Qm') == 0 ? `id/${subgraph}` : `name/${subgraph}`
-  const res = await fetch(`https://api.thegraph.com/subgraphs/${subgraphSubURL}`, {
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      query,
-    }),
-    method: "POST",
-    next: { revalidate: revalidateTime * MINUTE },
-  })
-  const data = await res.json()
-  if (data.errors) {
-    throw new Error(data.errors[0].message)
-  }
-  return data.data
-}
 
 export async function getSocialData(address: string): Promise<SocialData> {
   const socialDataRes = await fetch(`https://prod-api.kosetto.com/users/${address}`, {
