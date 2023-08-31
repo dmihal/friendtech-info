@@ -1,8 +1,9 @@
-import { getTopUsers } from '@/api'
-import UserTable from '../components/UserTable'
-import Banner from '../components/Banner'
-import SearchHeader from '../components/SearchHeader'
+import { getTopTraders } from '@/api'
+import UserTable from '../../components/UserTable'
+import Banner from '../../components/Banner'
+import SearchHeader from '../../components/SearchHeader'
 import Link from 'next/link'
+import TableWrapper from './TableWrapper'
 
 export const metadata = {
   title: 'FriendTech.info',
@@ -15,7 +16,8 @@ export const metadata = {
 }
 
 export default async function Home() {
-  const data = await getTopUsers()
+  const lifoData = await getTopTraders('lifo')
+  const fifoData = await getTopTraders('fifo')
 
   return (
     <>
@@ -25,9 +27,9 @@ export default async function Home() {
         <div className="flex flex-col items-center justify-center mt-5 md:mt-10">
           <SearchHeader/>
           <div>
-            <strong>Top Accounts</strong> | <Link href="/traders">Top Traders</Link>
+            <Link href="/">Top Accounts</Link> | <strong>Top Traders</strong>
           </div>
-          <UserTable people={data} />
+          <TableWrapper fifoData={fifoData} lifoData={lifoData} />
         </div>
       </main>
     </>

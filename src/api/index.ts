@@ -15,7 +15,19 @@ export interface SimpleAccountChainData {
   joined: number
   shareSupply: string
   tradingFees: string
+  realizedProfitLIFO: string
+  realizedProfitFIFO: string
 }
+
+const simpleAccountChainQuery = `
+  id
+  shareSupply
+  lastTradePrice
+  joined
+  tradingFees
+  realizedProfitLIFO
+  realizedProfitFIFO
+`
 
 export interface ChainPosition {
   subject: SimpleAccountChainData
@@ -54,7 +66,9 @@ export interface AccountTimeData {
 const MINUTE = 60
 
 async function graphQuery<T = any>(query: string, revalidateTime = 5): Promise<T> {
-  const res = await fetch("https://api.thegraph.com/subgraphs/name/dmihal/friend-tech", {
+  const subgraph = process.env.SUBGRAPH || 'dmihal/friend-tech'
+  const subgraphSubURL = subgraph.indexOf('Qm') == 0 ? `id/${subgraph}` : `name/${subgraph}`
+  const res = await fetch(`https://api.thegraph.com/subgraphs/${subgraphSubURL}`, {
     headers: {
       "content-type": "application/json",
     },
@@ -121,11 +135,20 @@ async function addPositionsSocialData(positions: ChainPosition[]): Promise<FullP
 export async function getTopUsers(): Promise<SimpleAccountData[]> {
   const data = await graphQuery(`{
     accounts(first: 100, orderBy: shareSupply, orderDirection: desc) {
-      id
-      shareSupply
-      lastTradePrice
-      joined
-      tradingFees
+      ${simpleAccountChainQuery}
+    }
+  }`)
+
+  const dataWithAccounts = await addSocialData(data.accounts)
+
+  return dataWithAccounts
+}
+
+export async function getTopTraders(order = 'lifo'): Promise<SimpleAccountData[]> {
+  const orderBy = order == 'lifo' ? 'realizedProfitLIFO' : 'realizedProfitFIFO'
+  const data = await graphQuery(`{
+    accounts(first: 100, orderBy: ${orderBy}, orderDirection: desc) {
+      ${simpleAccountChainQuery}
     }
   }`)
 
@@ -137,11 +160,7 @@ export async function getTopUsers(): Promise<SimpleAccountData[]> {
 export async function getRecentUsers(): Promise<SimpleAccountData[]> {
   const data = await graphQuery(`{
     accounts(first: 100, orderBy: joined, orderDirection: desc) {
-      id
-      shareSupply
-      lastTradePrice
-      joined
-      tradingFees
+      ${simpleAccountChainQuery}
     }
   }`, 15)
 
@@ -153,11 +172,7 @@ export async function getRecentUsers(): Promise<SimpleAccountData[]> {
 export async function getAccountData(address: string): Promise<FullAccountData | null> {
   const data = await graphQuery(`{
     account(id: "${address.toLowerCase()}") {
-      id
-      shareSupply
-      lastTradePrice
-      joined
-      tradingFees
+      ${simpleAccountChainQuery}
 
       positions(first: 500) {
         owner {

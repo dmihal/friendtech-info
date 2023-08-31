@@ -6,6 +6,7 @@ import Link from 'next/link';
 import ShareholderTable from './ShareholderTable'
 import Banner from '../../components/Banner'
 import { Metadata } from 'next';
+import RealizedProfitCell from './RealizedProfitCell';
 
 export async function generateStaticParams() {
   const accounts = await getTopUsers()
@@ -96,7 +97,7 @@ export default async function AddressPage({ params }: Props) {
                     <div className="bg-white px-4 py-5 sm:px-5 xl:px-4" style={{ flexBasis: '25%' }}>
                         <dt className="text-sm font-medium leading-6 text-gray-500">Trading Fees Earned</dt>
                         <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-                            {data.tradingFees}
+                            {parseFloat(data.tradingFees).toFixed(3)} ETH
                         </dd>
                     </div>
                     <div className="bg-white px-4 py-5 sm:px-5 xl:px-4" style={{ flexBasis: '25%' }}>
@@ -105,6 +106,7 @@ export default async function AddressPage({ params }: Props) {
                           {data.holderCount}
                         </dd>
                     </div>
+                    <RealizedProfitCell user={data} />
                   </div>
                 </div>
             </section>

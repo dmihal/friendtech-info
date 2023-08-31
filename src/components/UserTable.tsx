@@ -5,12 +5,20 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useContext } from 'react';
 import { AppRouterContext } from 'next/dist/shared/lib/app-router-context';
+import { getAccountName } from '@/utils';
 
 function classNames(...classes: (false | null | undefined | string)[]) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function UserTable({ people }: { people: SimpleAccountData[] }) {
+interface UserTableProps {
+  people: SimpleAccountData[]
+  traders?: boolean
+  props?: any
+  onChange?: (prop: string) => void
+}
+
+export default function UserTable({ people, traders, props, onChange }: UserTableProps) {
 
   const router = useContext(AppRouterContext)!
   let i = 1;
@@ -35,24 +43,37 @@ export default function UserTable({ people }: { people: SimpleAccountData[] }) {
                   >
                     User
                   </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 hidden border-b border-gray-300 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
-                  >
-                    Holders
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter hidden sm:table-cell"
-                  >
-                    Market cap
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
-                  >
-                    Price
-                  </th>
+                  {traders ? (
+                    <>
+                      <th
+                        scope="col"
+                        className="sticky top-0 z-10 hidden border-b border-gray-300 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
+                      >
+                        Realized Profit (<button onClick={() => onChange && onChange('order')}>{props.order}</button>)
+                      </th>
+                    </>
+                  ) : (
+                    <>
+                      <th
+                        scope="col"
+                        className="sticky top-0 z-10 hidden border-b border-gray-300 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
+                      >
+                        Holders
+                      </th>
+                      <th
+                        scope="col"
+                        className="sticky top-0 z-10 border-b border-gray-300 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter hidden sm:table-cell"
+                      >
+                        Market cap
+                      </th>
+                      <th
+                        scope="col"
+                        className="sticky top-0 z-10 border-b border-gray-300 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                      >
+                        Price
+                      </th>
+                    </>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -75,34 +96,51 @@ export default function UserTable({ people }: { people: SimpleAccountData[] }) {
                       <div className="flex items-center gap-x-4">
                         <img src={person.twitterPfpUrl} alt="" className="h-8 w-8 rounded-full bg-gray-100" />
                         <Link href={`/${person.id}`}>
-                          <div className="truncate text-sm font-medium leading-6 text-gray-900 w-24 md:w-auto">{person.twitterName}</div>
+                          <div className="truncate text-sm font-medium leading-6 text-gray-900 w-24 md:w-auto">
+                            {getAccountName(person)}
+                          </div>
                         </Link>
                       </div>
                     </td>
-                    <td
-                      className={classNames(
-                        personIdx !== people.length - 1 ? 'border-b border-gray-200' : '',
-                        'whitespace-nowrap hidden px-3 py-4 text-sm text-gray-500 lg:table-cell'
-                      )}
-                    >
-                      {person.holderCount}
-                    </td>
-                    <td
-                      className={classNames(
-                        personIdx !== people.length - 1 ? 'border-b border-gray-200' : '',
-                        'whitespace-nowrap hidden sm:table-cell px-3 py-4 text-sm text-gray-500'
-                      )}
-                    >
-                      {(parseFloat(person.holderCount) * (parseFloat(person.displayPrice) / 1e18)).toFixed(3) + ' ETH'}
-                    </td>
-                    <td
-                      className={classNames(
-                        personIdx !== people.length - 1 ? 'border-b border-gray-200' : '',
-                        'relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-8 lg:pr-8'
-                      )}
-                    >
-                      {(parseFloat(person.displayPrice) / 1e18).toFixed(3) + ' ETH'}
-                    </td>
+                    {traders ? (
+                      <>
+                        <td
+                          className={classNames(
+                            personIdx !== people.length - 1 ? 'border-b border-gray-200' : '',
+                            'relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-8 lg:pr-8'
+                          )}
+                        >
+                          {parseFloat(person.realizedProfitLIFO).toFixed(3) + ' ETH'}
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td
+                          className={classNames(
+                            personIdx !== people.length - 1 ? 'border-b border-gray-200' : '',
+                            'whitespace-nowrap hidden px-3 py-4 text-sm text-gray-500 lg:table-cell'
+                          )}
+                        >
+                          {person.holderCount}
+                        </td>
+                        <td
+                          className={classNames(
+                            personIdx !== people.length - 1 ? 'border-b border-gray-200' : '',
+                            'whitespace-nowrap hidden sm:table-cell px-3 py-4 text-sm text-gray-500'
+                          )}
+                        >
+                          {(parseFloat(person.holderCount) * (parseFloat(person.displayPrice) / 1e18)).toFixed(3) + ' ETH'}
+                        </td>
+                        <td
+                          className={classNames(
+                            personIdx !== people.length - 1 ? 'border-b border-gray-200' : '',
+                            'relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-8 lg:pr-8'
+                          )}
+                        >
+                          {(parseFloat(person.displayPrice) / 1e18).toFixed(3) + ' ETH'}
+                        </td>
+                      </>
+                    )}
                   </tr>
                 ))}
               </tbody>
