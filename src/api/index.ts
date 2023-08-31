@@ -14,6 +14,7 @@ export interface SimpleAccountChainData {
   lastTradePrice: string
   joined: number
   shareSupply: string
+  tradingFees: string
 }
 
 export interface ChainPosition {
@@ -124,6 +125,7 @@ export async function getTopUsers(): Promise<SimpleAccountData[]> {
       shareSupply
       lastTradePrice
       joined
+      tradingFees
     }
   }`)
 
@@ -139,6 +141,7 @@ export async function getRecentUsers(): Promise<SimpleAccountData[]> {
       shareSupply
       lastTradePrice
       joined
+      tradingFees
     }
   }`, 15)
 
@@ -154,6 +157,8 @@ export async function getAccountData(address: string): Promise<FullAccountData |
       shareSupply
       lastTradePrice
       joined
+      tradingFees
+
       positions(first: 500) {
         owner {
           id
