@@ -27,7 +27,7 @@ export default async function Home() {
         <div className="flex flex-col items-center justify-center mt-5 md:mt-10">
           <SearchHeader/>
           <div>
-            <Link href="/">Top Accounts</Link> | <strong>Top Traders</strong>
+            <Link href="/">Top Accounts</Link> | <strong>Top Traders</strong> | <Link href="/recent">Recently Joined</Link>
           </div>
           <TableWrapper fifoData={fifoData} lifoData={lifoData} />
         </div>

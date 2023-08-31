@@ -25,7 +25,7 @@ export default async function Home() {
         <div className="flex flex-col items-center justify-center mt-5 md:mt-10">
           <SearchHeader/>
           <div>
-            <strong>Top Accounts</strong> | <Link href="/traders">Top Traders</Link>
+            <strong>Top Accounts</strong> | <Link href="/traders">Top Traders</Link> | <Link href="/recent">Recently Joined</Link>
           </div>
           <UserTable people={data} />
         </div>
