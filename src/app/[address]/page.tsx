@@ -10,7 +10,7 @@ import RealizedProfitCell from './RealizedProfitCell';
 
 export async function generateStaticParams() {
   const accounts = await getTopUsers()
-  return accounts.map(account => ({ params: { address: account.id } }))
+  return accounts.map(account => ({ address: account.id }))
 }
 
 interface Props {
