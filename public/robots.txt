@@ -1,0 +1,6 @@
+Sitemap: https://friendtech.info/api/sitemap
+
+User-agent: *
+Allow: /*
+
+Disallow: /api/*
