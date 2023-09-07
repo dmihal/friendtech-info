@@ -8,9 +8,11 @@ import Banner from '../../components/Banner'
 import { Metadata } from 'next';
 import RealizedProfitCell from './RealizedProfitCell';
 
+const NUM_PRERENDER = 5
+
 export async function generateStaticParams() {
   const accounts = await getTopUsers()
-  return accounts.map(account => ({ address: account.id }))
+  return accounts.slice(0, NUM_PRERENDER).map(account => ({ address: account.id }))
 }
 
 interface Props {
